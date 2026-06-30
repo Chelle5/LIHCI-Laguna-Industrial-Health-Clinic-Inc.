@@ -13,8 +13,15 @@
   ],
   "routes": [
     {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/LIHCI-LOGO-TEXT-BLACK.svg"
+    },
+    {
       "src": "/api/(.*)",
-      "dest": "/api/$1.ts"
+      "dest": "/api/$1"
     },
     {
       "src": "/(.*)",
