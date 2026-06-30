@@ -3,8 +3,8 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'POST') {
     // TODO: Add email-sending logic here.
-    return res.status(200).json({ message: 'Email sent successfully!' });
+    return res.status(200).json({ success: true, message: 'Email sent successfully!' });
   }
 
-  return res.status(405).json({ error: 'Method Not Allowed' });
+  return res.status(405).json({ success: false, error: 'Method Not Allowed' });
 }
