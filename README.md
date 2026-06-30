@@ -19,6 +19,20 @@ Run `npm run dev` to start the development server.
 
 > For Gmail, use an App Password instead of your normal password. You can generate one in your Google Account security settings.
 
+## Deploying to Vercel
+
+1. Create a Vercel project from this repository.
+2. In Vercel Environment Variables, add:
+   - `SMTP_USERNAME` = your SMTP username
+   - `SMTP_PASSWORD` = your SMTP password or app password
+   - `SMTP_RECIPIENT` = the email address that should receive submissions
+   - `SMTP_HOST` = optional (default is `smtp.gmail.com`)
+   - `SMTP_PORT` = optional (default is `465`)
+3. Leave `VITE_API_URL` empty unless you want to point the frontend to a separate external backend.
+4. Deploy the project.
+
+After deployment, the contact form sends requests to `/api/contact` and the apply form sends requests to `/api/apply`.
+
 ## Vercel deployment notes
 
 - Set `VITE_API_URL` in Vercel environment variables to your deployed backend URL, for example `https://your-backend.vercel.app`.
