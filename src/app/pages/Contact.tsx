@@ -1,7 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Mail, MapPin, Phone, Check } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import { apiUrl } from "../lib/api";
+import { apiUrl, fetchJson } from "../lib/api";
 // @ts-ignore
 import logoText from "../../imports/LIHCI-LOGO-TEXT-BLACK.svg";
 // @ts-ignore
@@ -75,7 +75,7 @@ export default function Contact() {
     setSubmitError(null);
 
     try {
-      const response = await fetch(apiUrl("/contact"), {
+      const { response, data: result } = await fetchJson(apiUrl("/contact"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -83,10 +83,9 @@ export default function Contact() {
         body: JSON.stringify(formData),
       });
 
-      const result = await response.json();
-
       if (!response.ok || !result.success) {
-        throw new Error(result.error || "Unable to send your message right now.");
+        const message = result.error || "Unable to send your message right now.";
+        throw new Error(message.startsWith("<") ? "Unexpected non-JSON backend response. Check your API URL or backend deployment." : message);
       }
 
       setSent(true);

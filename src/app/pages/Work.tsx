@@ -1,7 +1,7 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Check } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import { apiUrl } from "../lib/api";
+import { apiUrl, fetchJson } from "../lib/api";
 // @ts-ignore
 import logoText from "../../imports/LIHCI-LOGO-TEXT-BLACK.svg";
 // @ts-ignore
@@ -242,15 +242,14 @@ export default function Work() {
         form.append("resume", file);
       }
 
-      const response = await fetch(apiUrl("/apply"), {
+      const { response, data: result } = await fetchJson(apiUrl("/apply"), {
         method: "POST",
         body: form,
       });
 
-      const result = await response.json();
-
       if (!response.ok || !result.success) {
-        throw new Error(result.error || "Unable to submit your application right now.");
+        const message = result.error || "Unable to submit your application right now.";
+        throw new Error(message.startsWith("<") ? "Unexpected non-JSON backend response. Check your API URL or backend deployment." : message);
       }
 
       setSubmitted(true);
