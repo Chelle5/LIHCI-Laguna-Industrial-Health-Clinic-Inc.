@@ -21,7 +21,6 @@ const cats = [
 ];
 
 export default function Clients() {
-  // Dito itatago ang image source kapag kinlik ng user para i-preview
   const [activeImage, setActiveImage] = useState<string | null>(null);
 
   return (
@@ -91,7 +90,7 @@ export default function Clients() {
       {activeImage && (
         <div 
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md transition-all duration-300 animate-in fade-in"
-          onClick={() => setActiveImage(null)} // Isasara kapag kinlik ang madilim na labas
+          onClick={() => setActiveImage(null)}
         >
           
           <button
@@ -105,7 +104,7 @@ export default function Clients() {
 
           <div 
             className="relative max-h-[90vh] max-w-[95vw] overflow-hidden rounded-2xl bg-white p-4 shadow-2xl transition-all animate-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()} // Pipigilan magsara kapag mismo yung white frame ang pinindot
+            onClick={(e) => e.stopPropagation()}
           >
             <img
               src={activeImage}

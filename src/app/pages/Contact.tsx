@@ -22,6 +22,8 @@ interface ContactFormErrors {
 
 export default function Contact() {
   const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState<ContactFormFields>({
     fullName: "",
     email: "",
@@ -37,52 +39,67 @@ export default function Contact() {
     }
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const newErrors: ContactFormErrors = {};
 
-    // 1. Full Name Validation
     if (!formData.fullName.trim()) {
       newErrors.fullName = "Full name is required";
     }
 
-    // 2. Email Validation (dapat valid email address tulad ng @gmail.com)
     if (!formData.email.trim()) {
       newErrors.email = "Email address is required";
     } else {
-      // Basic regex check para sa valid email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email)) {
         newErrors.email = "Please enter a valid email address (e.g. user@gmail.com)";
       }
     }
 
-    // 3. Company Validation (Required, kapag wala, ilagay ang N/A)
     if (!formData.company.trim()) {
       newErrors.company = "Company is required. Please enter 'N/A' if not applicable.";
     }
 
-    // 4. Message Validation
     if (!formData.message.trim()) {
       newErrors.message = "Message is required";
     }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      setSubmitError(null);
       return;
     }
 
-    // Kung walang error, isend ang message
-    console.log("Message Data:", formData);
-    setSent(true);
-    
-    // Optional: Reset form fields after successful submission
-    setFormData({
-      fullName: "",
-      email: "",
-      company: "",
-      message: "",
-    });
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch("http://localhost:5000/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to send your message right now.");
+      }
+
+      setSent(true);
+      setFormData({
+        fullName: "",
+        email: "",
+        company: "",
+        message: "",
+      });
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Unable to send your message right now.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -233,8 +250,18 @@ export default function Contact() {
                 {errors.message && <p className="mt-1 text-xs text-red-500">{errors.message}</p>}
               </div>
               
-              <button type="submit" className="mt-2 w-full rounded-full bg-primary py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600">
-                Send Message
+              {submitError && (
+                <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                  {submitError}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="mt-2 w-full rounded-full bg-primary py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           )}

@@ -1,4 +1,5 @@
 import { useState, FormEvent, ChangeEvent } from "react";
+import { Check } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 // @ts-ignore
 import logoText from "../../imports/LIHCI-LOGO-TEXT-BLACK.svg";
@@ -76,6 +77,9 @@ export default function Work() {
   const [pos, setPos] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const [formData, setFormData] = useState<FormFields>({
     firstName: "",
@@ -108,7 +112,6 @@ export default function Work() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [workErrors, setWorkErrors] = useState<WorkError[]>([]);
 
-  // Kunin ang exact local date today (YYYY-MM-DD)
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
@@ -159,7 +162,7 @@ export default function Work() {
     }
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const newErrors: FormErrors = {};
     const newWorkErrors: WorkError[] = [];
@@ -214,13 +217,66 @@ export default function Work() {
       return;
     }
 
-    alert("Application submitted successfully!");
-    console.log({
-      position: pos === "Others" ? formData.otherPosition : pos,
-      ...formData,
-      workExperiences,
-      attachedFile: file,
-    });
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const form = new FormData();
+      form.append("firstName", formData.firstName);
+      form.append("middleName", formData.middleName);
+      form.append("lastName", formData.lastName);
+      form.append("age", formData.age);
+      form.append("gender", formData.gender);
+      form.append("civilStatus", formData.civilStatus);
+      form.append("position", pos === "Others" ? formData.otherPosition : pos);
+      form.append("email", formData.email);
+      form.append("contactNumber", formData.contactNumber);
+      form.append("address", formData.address);
+      form.append("city", formData.city);
+      form.append("state", formData.state);
+      form.append("zipCode", formData.zipCode);
+      form.append("notes", formData.notes);
+      form.append("workExperiences", JSON.stringify(workExperiences));
+      if (file) {
+        form.append("resume", file);
+      }
+
+      const response = await fetch("http://localhost:5000/apply", {
+        method: "POST",
+        body: form,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to submit your application right now.");
+      }
+
+      setSubmitted(true);
+      setFormData({
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        age: "",
+        gender: "",
+        civilStatus: "",
+        email: "",
+        contactNumber: "",
+        address: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        notes: "",
+        otherPosition: "",
+      });
+      setFile(null);
+      setPos("");
+      setAgreed(false);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Unable to submit your application right now.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -261,10 +317,25 @@ export default function Work() {
           </ul>
         </aside>
 
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-white p-8 shadow-sm">
-          <h2 className="font-['Roboto_Slab'] text-2xl font-bold mb-6">Online Application</h2>
+        {submitted ? (
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-white p-12 text-center h-96">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
+              <Check size={24} className="text-primary" />
+            </div>
+            <h3 className="mb-2 font-['Roboto_Slab'] text-2xl font-bold">Application Submitted</h3>
+            <p className="max-w-xs text-muted-foreground mb-6">Thank you for your interest in joining LIHCI. We've received your application and will review it shortly.</p>
+            <button
+              onClick={() => setSubmitted(false)}
+              className="text-sm font-semibold text-primary hover:underline"
+            >
+              Submit Another Application
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-white p-8 shadow-sm">
+            <h2 className="font-['Roboto_Slab'] text-2xl font-bold mb-6">Online Application</h2>
 
-          <div className="grid gap-8">
+            <div className="grid gap-8">
             <div className="space-y-3">
               <div>
                 <label className="mb-1.5 block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
@@ -617,16 +688,23 @@ export default function Work() {
                 </span>
               </label>
 
+              {submitError && (
+                <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                  {submitError}
+                </p>
+              )}
+
               <button
                 type="submit"
-                disabled={!agreed}
+                disabled={!agreed || isSubmitting}
                 className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-white hover:bg-blue-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Submit Application
+                {isSubmitting ? "Submitting..." : "Submit Application"}
               </button>
             </div>
           </div>
         </form>
+        )}
       </section>
     </>
   );

@@ -36,7 +36,6 @@ const amenities = [
 ];
 
 export default function Clinics() {
-  // State para sa fullscreen view ng napiling clinic branch image
   const [activeImage, setActiveImage] = useState<string | null>(null);
 
   return (

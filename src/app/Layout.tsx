@@ -139,7 +139,7 @@ export default function Layout() {
               Reach Us
             </h4>
 
-            {/* Inayos ang flex alignment ng mga detalye rito gamit ang items-start at mt-0.5 */}
+            
             <div className="space-y-3">
               <p className="flex items-start gap-2 text-sm text-white/80">
                 <MapPin size={16} className="mt-0.5 flex-shrink-0 text-primary" />
