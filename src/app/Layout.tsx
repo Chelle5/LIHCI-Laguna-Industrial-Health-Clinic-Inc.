@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet, NavLink, Link } from "react-router";
+import { Outlet, NavLink, Link } from "react-router-dom";
 import { Menu, X, Phone, MapPin, Clock, Mail, Facebook, Linkedin } from "lucide-react";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 // @ts-ignore

@@ -1,6 +1,6 @@
-    import { Link } from "react-router";
-    import { ArrowRight, Check } from "lucide-react";
-    import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { Link } from "react-router-dom";
+import { ArrowRight, Check } from "lucide-react";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
     // @ts-ignore
     import aboutBanner from "../../imports/Medbannerbg.png";
     // @ts-ignore

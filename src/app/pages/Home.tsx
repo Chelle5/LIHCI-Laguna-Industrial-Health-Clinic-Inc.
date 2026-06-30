@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { AnimatedNumber } from "../components/ui/AnimatedNumber";
