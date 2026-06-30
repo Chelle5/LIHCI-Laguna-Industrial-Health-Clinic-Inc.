@@ -19,3 +19,9 @@ Run `npm run dev` to start the development server.
 
 > For Gmail, use an App Password instead of your normal password. You can generate one in your Google Account security settings.
 
+## Vercel deployment notes
+
+- Set `VITE_API_URL` in Vercel environment variables to your deployed backend URL, for example `https://your-backend.vercel.app`.
+- If the backend is served from the same domain as the frontend, leave `VITE_API_URL` empty and use the relative proxy path.
+- The frontend uses `apiUrl(path)` so the same code works for both local dev and deployed production.
+

@@ -1,6 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Mail, MapPin, Phone, Check } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { apiUrl } from "../lib/api";
 // @ts-ignore
 import logoText from "../../imports/LIHCI-LOGO-TEXT-BLACK.svg";
 // @ts-ignore
@@ -74,7 +75,7 @@ export default function Contact() {
     setSubmitError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/contact", {
+      const response = await fetch(apiUrl("/contact"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

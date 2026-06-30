@@ -1,6 +1,7 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Check } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { apiUrl } from "../lib/api";
 // @ts-ignore
 import logoText from "../../imports/LIHCI-LOGO-TEXT-BLACK.svg";
 // @ts-ignore
@@ -241,7 +242,7 @@ export default function Work() {
         form.append("resume", file);
       }
 
-      const response = await fetch("http://localhost:5000/apply", {
+      const response = await fetch(apiUrl("/apply"), {
         method: "POST",
         body: form,
       });
